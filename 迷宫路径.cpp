@@ -48,9 +48,9 @@ public:
 	Stack(int top = -1, int size = 10)
 		:_top(top), _size(size)
 	{
-		_stack = (Mazenode*)malloc(sizeof(Mazenode)*size);
+		_stack = (Mazenode*)malloc(sizeof(Mazenode) * size);
 	}
-	void push(const Mazenode &node)
+	void push(const Mazenode& node)
 	{
 		if (_top == _size)
 		{
@@ -59,8 +59,8 @@ public:
 		this->_top++;
 		_stack[_top] = node;
 	}
-	void pop(){
-		if(empty())
+	void pop() {
+		if (empty())
 		{
 			return;
 		}
@@ -70,12 +70,12 @@ public:
 	bool empty() { return _top == -1; }
 	~Stack() { free(_stack); }
 private:
-	Mazenode *_stack;
+	Mazenode* _stack;
 	int _top;
 	int _size;
 	void resize(int size)
 	{
-		_stack = (Mazenode*)realloc(_stack, sizeof(Mazenode)*size);
+		_stack = (Mazenode*)realloc(_stack, sizeof(Mazenode) * size);
 		_size *= 2;
 	}
 };
@@ -86,7 +86,7 @@ public:
 	Maze(int r = 10, int c = 10)
 		:_row(r), _col(c), _stack(Stack())
 	{
-		_pmazes = new Mazenode*[r];
+		_pmazes = new Mazenode * [r];
 		for (int i = 0; i < r; ++i)
 		{
 			_pmazes[i] = new Mazenode[c];
@@ -138,8 +138,8 @@ public:
 		while (!_stack.empty())//退出条件：1栈空，2走到终点
 		{
 			//找出可走的方向，否则退栈
-			int way = -1;
-			Mazenode &node = _stack.top();
+			int way = WAY_CNT;
+			Mazenode& node = _stack.top();
 			row = node.get_row();
 			col = node.get_col();
 			for (int i = 0; i < WAY_CNT; ++i)
@@ -199,42 +199,33 @@ public:
 	{
 		int row = -1;
 		int col = -1;
-		if (!_stack.empty())
+		while (!_stack.empty())
 		{
 			row = _stack.top().get_row();
 			col = _stack.top().get_col();
+			_pmazes[row][col].set_val(-1);
+			_stack.pop();
 		}
 
 		for (int i = 0; i < _row; ++i)
 		{
 			for (int j = 0; j < _col; ++j)
 			{
-				if (row == i && col == j)
+				if (_pmazes[i][j].get_val() == -1)
 				{
 					cout << "*" << " ";
-					if (!_stack.empty())
-					{
-						row = _stack.top().get_row();
-						col = _stack.top().get_col();
-					}
-					else
-					{
-						row = -1;
-						col = -1;
-					}
+					continue;
 				}
-				else
-				{
-					cout << _pmazes[i][j].get_val() << " ";
-				}
+				cout << _pmazes[i][j].get_val() << " ";
 			}
 			cout << endl;
 		}
 	}
+
 private:
 	int _row;
 	int _col;
-	Mazenode **_pmazes;
+	Mazenode** _pmazes;
 	Stack _stack;
 };
 
@@ -256,6 +247,7 @@ int main()
 	}
 	// 调整迷宫节点方向的行走状态
 	maze.adjustMazeNode();
+	cout << "adjust over" << endl;
 	// 开始寻找迷宫路径
 	maze.adjustMazeNodefindMazePath();
 	cout << "======================================================" << endl;
